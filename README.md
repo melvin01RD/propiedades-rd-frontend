@@ -2,11 +2,6 @@
 
 > Marketplace inmobiliario para República Dominicana. Busca, filtra y publica propiedades con mapas interactivos, estimación de precios por zona y analytics de mercado.
 
-![Next.js](https://img.shields.io/badge/Next.js_14-000000?style=flat&logo=nextdotjs&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat&logo=typescript&logoColor=white)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-06B6D4?style=flat&logo=tailwindcss&logoColor=white)
-![Mapbox](https://img.shields.io/badge/Mapbox-000000?style=flat&logo=mapbox&logoColor=white)
-
 ---
 
 ## ¿Qué es esto?
