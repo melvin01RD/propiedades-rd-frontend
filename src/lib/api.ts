@@ -225,6 +225,15 @@ export interface PropertyFilters {
   amenity_slugs?: string[];
 }
 
+// Favoritos
+export interface FavoriteResponse {
+  id: string;
+  user_id: string;
+  property_id: string;
+  property: PropertyListItem;
+  created_at: string;
+}
+
 // Alertas
 export interface AlertFilters {
   operation_type?: OperationType;
