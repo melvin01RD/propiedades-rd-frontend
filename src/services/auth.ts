@@ -33,6 +33,9 @@ import type {
   UserRole,
 } from "@/lib/api";
 
+// FastAPI usa OAuth2PasswordRequestForm → requiere form-encoded, no JSON
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+
 // ─────────────────────────────────────────────
 // Configuración de cookies
 // ─────────────────────────────────────────────
@@ -108,20 +111,34 @@ export async function register(data: RegisterRequest): Promise<AuthResult> {
 // ─────────────────────────────────────────────
 
 export async function login(data: LoginRequest): Promise<AuthResult> {
-  const result = await apiFetch<TokenResponse>("/auth/login", {
-    method: "POST",
-    body: data,
-    public: true,
-  });
+  // FastAPI OAuth2PasswordRequestForm requiere application/x-www-form-urlencoded
+  // con el campo "username" (no "email"). apiFetch siempre envía JSON, por eso
+  // usamos fetch directo aquí.
+  const formData = new URLSearchParams();
+  formData.append("username", data.email);
+  formData.append("password", data.password);
 
-  if (result.error || !result.data) {
+  let rawRes: Response;
+  try {
+    rawRes = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: formData.toString(),
+    });
+  } catch {
+    return { success: false, error: "No se pudo conectar con el servidor." };
+  }
+
+  if (!rawRes.ok) {
+    const err: { detail?: string } = await rawRes.json().catch(() => ({}));
     return {
       success: false,
-      error: result.error?.message ?? "Credenciales inválidas.",
+      error: err.detail ?? "Credenciales inválidas.",
     };
   }
 
-  setAccessTokenCookie(result.data.access_token);
+  const tokenData: TokenResponse = await rawRes.json();
+  setAccessTokenCookie(tokenData.access_token);
 
   // Obtener datos del usuario para devolverlos al componente
   const meResult = await getMe();

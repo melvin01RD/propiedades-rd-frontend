@@ -47,7 +47,7 @@ const PROTECTED_ROUTES: ProtectedRoute[] = [
 const AUTH_ROUTES = ["/login", "/registro"];
 
 /** Prefijos que el middleware NUNCA debe interceptar */
-const SKIP_PREFIXES = ["/_next", "/favicon", "/public/"];
+const SKIP_PREFIXES = ["/_next", "/favicon", "/public/", "/api/"];
 
 // ─────────────────────────────────────────────
 // Helper: verificar expiración del JWT (sin validar firma)
