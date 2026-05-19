@@ -180,6 +180,16 @@ export interface PropertyPageResponse {
   has_prev: boolean;
 }
 
+/** Listado enriquecido para el dashboard del agente (incluye status y fecha) */
+export interface MyPropertyListItem extends PropertyListItem {
+  status: PropertyStatus;
+  created_at: string;
+}
+
+export interface MyPropertyPageResponse extends Omit<PropertyPageResponse, "items"> {
+  items: MyPropertyListItem[];
+}
+
 export interface PropertyCreate {
   title: string;
   description?: string | null;

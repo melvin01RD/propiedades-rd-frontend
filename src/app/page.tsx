@@ -1,6 +1,6 @@
 import Link from "next/link";
 import PropertyCard from "@/components/property/PropertyCard";
-import { mockProperties } from "@/lib/mockData";
+import { getProperties } from "@/services/properties";
 
 const stats = [
   { value: "8,400+", label: "Propiedades activas" },
@@ -9,8 +9,9 @@ const stats = [
   { value: "Hoy", label: "Última actualización" },
 ];
 
-export default function HomePage() {
-  const featured = mockProperties.slice(0, 6);
+export default async function HomePage() {
+  const { data: featuredData } = await getProperties({ is_featured: true, limit: 6 });
+  const featured = featuredData?.items ?? [];
 
   return (
     <div className="bg-white">
@@ -102,44 +103,46 @@ export default function HomePage() {
       </section>
 
       {/* ── Featured properties ── */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
-        <div className="flex items-end justify-between mb-8">
-          <div>
-            <h2 className="font-serif text-3xl text-brand-950">
-              Propiedades destacadas
-            </h2>
-            <p className="text-text-secondary mt-1 text-sm">
-              Selección editorial actualizada cada semana
-            </p>
+      {featured.length > 0 && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16">
+          <div className="flex items-end justify-between mb-8">
+            <div>
+              <h2 className="font-serif text-3xl text-brand-950">
+                Propiedades destacadas
+              </h2>
+              <p className="text-text-secondary mt-1 text-sm">
+                Selección editorial actualizada cada semana
+              </p>
+            </div>
+            <Link
+              href="/propiedades"
+              className="text-sm text-primary hover:text-primary-dark font-medium transition-colors hidden sm:inline-flex items-center gap-1"
+            >
+              Ver todas
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="5" y1="12" x2="19" y2="12" />
+                <polyline points="12 5 19 12 12 19" />
+              </svg>
+            </Link>
           </div>
-          <Link
-            href="/propiedades"
-            className="text-sm text-primary hover:text-primary-dark font-medium transition-colors hidden sm:inline-flex items-center gap-1"
-          >
-            Ver todas
-            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12" />
-              <polyline points="12 5 19 12 12 19" />
-            </svg>
-          </Link>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {featured.map((property) => (
-            <PropertyCard key={property.id} {...property} />
-          ))}
-        </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {featured.map((property) => (
+              <PropertyCard key={property.id} {...property} />
+            ))}
+          </div>
 
-        {/* Mobile CTA */}
-        <div className="text-center mt-8 sm:hidden">
-          <Link
-            href="/propiedades"
-            className="inline-block px-6 py-3 bg-primary text-white text-sm font-semibold rounded-xl hover:bg-primary-dark transition-colors"
-          >
-            Ver todas las propiedades
-          </Link>
-        </div>
-      </section>
+          {/* Mobile CTA */}
+          <div className="text-center mt-8 sm:hidden">
+            <Link
+              href="/propiedades"
+              className="inline-block px-6 py-3 bg-primary text-white text-sm font-semibold rounded-xl hover:bg-primary-dark transition-colors"
+            >
+              Ver todas las propiedades
+            </Link>
+          </div>
+        </section>
+      )}
     </div>
   );
 }

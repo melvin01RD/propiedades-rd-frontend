@@ -7,6 +7,7 @@ import { apiFetch } from "@/lib/api";
 import type {
   ApiResponse,
   PropertyPageResponse,
+  MyPropertyPageResponse,
   PropertyResponse,
   PropertyCreate,
   PropertyUpdate,
@@ -63,4 +64,23 @@ export async function deleteProperty(
   id: string
 ): Promise<ApiResponse<null>> {
   return apiFetch<null>(`/properties/${id}`, { method: "DELETE" });
+}
+
+export async function getMyProperties(
+  filters?: PropertyFilters
+): Promise<ApiResponse<MyPropertyPageResponse>> {
+  const params = new URLSearchParams();
+  if (filters) {
+    const { amenity_slugs, ...rest } = filters;
+    for (const [key, value] of Object.entries(rest)) {
+      if (value !== undefined && value !== null) {
+        params.set(key, String(value));
+      }
+    }
+    if (amenity_slugs?.length) {
+      amenity_slugs.forEach((slug) => params.append("amenity_slugs", slug));
+    }
+  }
+  const query = params.toString();
+  return apiFetch<MyPropertyPageResponse>(`/properties/mine${query ? `?${query}` : ""}`);
 }

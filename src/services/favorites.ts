@@ -23,3 +23,9 @@ export async function removeFavorite(
 ): Promise<ApiResponse<null>> {
   return apiFetch<null>(`/favorites/${propertyId}`, { method: "DELETE" });
 }
+
+export async function checkFavorite(propertyId: string): Promise<boolean> {
+  const { data } = await getFavorites();
+  if (!data) return false;
+  return data.some((f) => f.property_id === propertyId);
+}

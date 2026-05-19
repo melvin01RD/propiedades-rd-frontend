@@ -1,7 +1,19 @@
 import PropertyCard from "./PropertyCard";
-import { mockProperties } from "@/lib/mockData";
+import type { PropertyListItem } from "@/lib/api";
 
-export default function PropertyGrid() {
+interface PropertyGridProps {
+  properties: PropertyListItem[];
+  total: number;
+  page?: number;
+  pages?: number;
+}
+
+export default function PropertyGrid({
+  properties,
+  total,
+  page = 1,
+  pages = 1,
+}: PropertyGridProps) {
   return (
     <div>
       {/* Header */}
@@ -12,7 +24,7 @@ export default function PropertyGrid() {
           </h1>
           <p className="text-sm text-text-secondary mt-0.5">
             En Venta o Alquiler ·{" "}
-            <span className="font-medium text-text-primary">121 resultados</span>
+            <span className="font-medium text-text-primary">{total} resultados</span>
           </p>
         </div>
 
@@ -62,39 +74,43 @@ export default function PropertyGrid() {
 
       {/* Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-        {mockProperties.map((property) => (
+        {properties.map((property) => (
           <PropertyCard key={property.id} {...property} />
         ))}
       </div>
 
       {/* Pagination */}
-      <div className="flex items-center justify-center gap-1 mt-10">
-        <button
-          type="button"
-          className="px-4 py-2 text-sm text-text-secondary border border-brand-100 rounded-lg hover:bg-brand-50 transition-colors"
-        >
-          Anterior
-        </button>
-        {[1, 2, 3].map((page) => (
+      {pages > 1 && (
+        <div className="flex items-center justify-center gap-1 mt-10">
           <button
-            key={page}
             type="button"
-            className={`w-9 h-9 text-sm rounded-lg transition-colors ${
-              page === 1
-                ? "bg-primary text-white"
-                : "text-text-secondary border border-brand-100 hover:bg-brand-50"
-            }`}
+            disabled={page <= 1}
+            className="px-4 py-2 text-sm text-text-secondary border border-brand-100 rounded-lg hover:bg-brand-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            {page}
+            Anterior
           </button>
-        ))}
-        <button
-          type="button"
-          className="px-4 py-2 text-sm text-text-secondary border border-brand-100 rounded-lg hover:bg-brand-50 transition-colors"
-        >
-          Siguiente
-        </button>
-      </div>
+          {Array.from({ length: Math.min(pages, 5) }, (_, i) => i + 1).map((p) => (
+            <button
+              key={p}
+              type="button"
+              className={`w-9 h-9 text-sm rounded-lg transition-colors ${
+                p === page
+                  ? "bg-primary text-white"
+                  : "text-text-secondary border border-brand-100 hover:bg-brand-50"
+              }`}
+            >
+              {p}
+            </button>
+          ))}
+          <button
+            type="button"
+            disabled={page >= pages}
+            className="px-4 py-2 text-sm text-text-secondary border border-brand-100 rounded-lg hover:bg-brand-50 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+          >
+            Siguiente
+          </button>
+        </div>
+      )}
     </div>
   );
 }
